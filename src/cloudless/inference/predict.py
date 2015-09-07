@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-import os, sys, argparse, glob, time, re, re
+import os, sys, argparse, glob, time, re, subprocess
 CAFFE_HOME = os.environ.get("CAFFE_HOME")
 sys.path.append(CAFFE_HOME)
 
@@ -105,9 +105,11 @@ def main(argv):
 
   # Caffe swaps RGB channels
   channel_swap = [2, 1, 0]
+ 
+  # little hack to go in with pre-batched dim, no need to resize 
+  cmd = "./change-dim.sh {} {} {}".format(args.config, 1, len(inp)) 
+  subprocess.call(cmd, shell=True)
 
-  # TODO: resizing on incoming config to make batching more efficient, predict
-  # loops over each image, slow
   # Make classifier.
   classifier = caffe.Classifier(args.config,
                                 args.weights,
